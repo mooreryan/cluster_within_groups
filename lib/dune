@@ -4,8 +4,12 @@
   bio_io
   core
   core_unix
-  core_unix.sys_unix
   core_unix.filename_unix
+  core_unix.sys_unix
+  core_unix.time_unix
+  fmt.tty
+  logs
+  logs.fmt
   shexp.process
   re)
  (inline_tests

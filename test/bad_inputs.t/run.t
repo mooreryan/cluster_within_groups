@@ -1,10 +1,11 @@
 Seqs missing groups
 
-  $ cluster_within_groups seqs.fa groups.tsv
-  s1 has no group ID and will be ignored
-  s2 has no group ID and will be ignored
-  cluster_within_groups: "Partitions contained no data. Does the groups file match the seqs file?"
+  $ cluster_within_groups seqs.fa groups.tsv 2> err
   [123]
+  $ ../redact_log_timestamp err
+  WARNING [DATETIME] s1 has no group ID and will be ignored
+  WARNING [DATETIME] s2 has no group ID and will be ignored
+  cluster_within_groups: "Partitions contained no data. Does the groups file match the seqs file?"
 
 Non unique seq IDs
 
