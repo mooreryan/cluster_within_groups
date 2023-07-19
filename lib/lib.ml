@@ -218,6 +218,7 @@ module Seqs = struct
       ~f:(fun grouped_seqs record ->
         let open Bio_io.Fasta in
         let seq_id = Record.id record in
+        (* Check if this sequence has an associated group ID. *)
         match Map.find seq_ids_to_group_ids seq_id with
         | None ->
             (* Ignore any sequence that doesn't have a group ID. But log
@@ -227,15 +228,12 @@ module Seqs = struct
             grouped_seqs
         | Some group_id ->
             let group_info =
-              (* Map.find group_info group_id (* This one really should be a
-                 bug. *) |> Option.value_exn ~here:[%here] ~message: [%string
-                 "Group ID has no group info: %{group_id} (seq_id
-                 %{seq_id})"] *)
+              (* If it has an associated group ID, then that group SHOULD have
+                 info. *)
               match Map.find group_info group_id with
               | Some result ->
                   result
               | None ->
-                  print_s @@ [%sexp_of: Groups.group_info] group_info ;
                   failwith
                     [%string
                       "Group ID has no group info: %{group_id} (seq_id \
@@ -329,9 +327,11 @@ module Mmseqs = struct
           ; "1" ] )
     |> Sh.eval
 
-  let cluster_partitions : Groups.group_info -> Opts.t -> unit =
-   fun group_info opts ->
-    Map.iter group_info ~f:(fun (ids_and_oc : Groups.ids_and_oc) ->
+  (* Partitions only include groups with sequences, (if you run the assert
+     first.) *)
+  let cluster_partitions : Seqs.partitions -> Opts.t -> unit =
+   fun partitions opts ->
+    Map.iter partitions ~f:(fun (_records, (ids_and_oc : Groups.ids_and_oc)) ->
         let seqs = ids_and_oc.out_file in
         let out_basename = strip_fa_suffix seqs ^ ".clu" in
         Logs.debug (fun m -> m "Clustering seqs (%s)" seqs) ;
@@ -387,7 +387,7 @@ let run : Opts.t -> unit =
   Logs.info (fun m -> m "Writing partitions") ;
   Seqs.write_partitions partitions ;
   Logs.info (fun m -> m "Clustering partitions") ;
-  Mmseqs.cluster_partitions group_info opts ;
+  Mmseqs.cluster_partitions partitions opts ;
   Logs.info (fun m -> m "Writing cluster file") ;
   Mmseqs.cat_clu_tsv opts.outdir ;
   Logs.info (fun m -> m "Writing rep seqs file") ;
