@@ -1,0 +1,7 @@
+(executable
+ (public_name cluster_within_groups)
+ (name cluster_within_groups)
+ (modes native byte)
+ (libraries lib cmdliner)
+ (instrumentation
+  (backend bisect_ppx)))
