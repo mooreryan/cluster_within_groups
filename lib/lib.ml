@@ -334,6 +334,7 @@ module Mmseqs = struct
     Map.iter group_info ~f:(fun (ids_and_oc : Groups.ids_and_oc) ->
         let seqs = ids_and_oc.out_file in
         let out_basename = strip_fa_suffix seqs ^ ".clu" in
+        Logs.debug (fun m -> m "Clustering seqs (%s)" seqs) ;
         run ~mmseqs_exe:opts.mmseqs_exe ~seqs ~out_basename
           ~cov_percent:opts.cov_percent ~min_seq_id:opts.min_seq_id
           ~threads:opts.threads ;
@@ -367,21 +368,31 @@ let run : Opts.t -> unit =
   Logging.set_up_logging "debug" ;
   if not (Sys_unix.file_exists_exn opts.outdir) then
     Core_unix.mkdir_p opts.outdir ;
+  Logs.info (fun m -> m "Getting seq IDs to group IDs") ;
   let seq_ids_to_group_ids =
     Groups.read_seq_ids_to_group_ids opts.groups_file
   in
   assert_map_not_empty seq_ids_to_group_ids "seq_ids_to_group_ids" ;
+  Logs.info (fun m -> m "Getting group info") ;
   let group_info =
     Groups.read_group_info ~file:opts.groups_file ~outdir:opts.outdir
   in
   assert_map_not_empty group_info "group_info" ;
+  Logs.info (fun m -> m "Reading seqs") ;
   let records = Seqs.read opts.seqs_file in
+  Logs.info (fun m -> m "Generating partitions") ;
   let partitions = Seqs.partition ~records ~seq_ids_to_group_ids ~group_info in
+  Logs.info (fun m -> m "Checking partitions") ;
   Seqs.check_partitions partitions ;
+  Logs.info (fun m -> m "Writing partitions") ;
   Seqs.write_partitions partitions ;
+  Logs.info (fun m -> m "Clustering partitions") ;
   Mmseqs.cluster_partitions group_info opts ;
+  Logs.info (fun m -> m "Writing cluster file") ;
   Mmseqs.cat_clu_tsv opts.outdir ;
+  Logs.info (fun m -> m "Writing rep seqs file") ;
   Mmseqs.cat_rep_seqs opts.outdir ;
+  Logs.info (fun m -> m "Done!") ;
   ()
 
 let run opts = try Ok (run opts) with exn -> Error (Exn.to_string exn)

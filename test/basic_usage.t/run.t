@@ -1,11 +1,26 @@
 Basic usage
 
-  $ cluster_within_groups seqs.fa groups.tsv --threads=4 --outdir=clusters --min-seq-id=0.5 --cov=0.5
+  $ cluster_within_groups seqs.fa groups.tsv --threads=4 --outdir=clusters --min-seq-id=0.5 --cov=0.5 2> err
+  $ ../redact_log_timestamp err
+  INFO [DATETIME] Getting seq IDs to group IDs
+  INFO [DATETIME] Getting group info
+  INFO [DATETIME] Reading seqs
+  INFO [DATETIME] Generating partitions
+  INFO [DATETIME] Checking partitions
+  INFO [DATETIME] Writing partitions
+  INFO [DATETIME] Clustering partitions
+  DEBUG [DATETIME] Clustering seqs (clusters/split___nrdA.fa)
+  DEBUG [DATETIME] Clustering seqs (clusters/split___polA.fa)
+  DEBUG [DATETIME] Clustering seqs (clusters/split___rna_pol.fa)
+  INFO [DATETIME] Writing cluster file
+  INFO [DATETIME] Writing rep seqs file
+  INFO [DATETIME] Done!
 
 Check the files
 
   $ ls
   clusters
+  err
   groups.tsv
   seqs.fa
   $ ls clusters
