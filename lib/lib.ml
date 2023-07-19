@@ -46,8 +46,10 @@ end
 
 (* Dealing with sequence groupings *)
 module Groups = struct
-  type ids_and_oc =
-    {seq_ids: Set.M(String).t; oc: Out_channel.t; out_file: string}
+  (* Don't keep the out_channel here as we only want to open files that have
+     sequences to write. (Ie if a group has no seqs in the fasta, we don't want
+     the out_channel.create fun to create an empty file.) *)
+  type ids_and_oc = {seq_ids: Set.M(String).t; out_file: string}
   [@@deriving sexp_of]
 
   (** This is the group_id => seqs_ids, oc, and out_file name. *)
@@ -76,24 +78,18 @@ module Groups = struct
         ~f:Set.add
       |> Map.mapi ~f:(fun ~key:group_id ~data:seq_ids ->
              let file = outdir ^/ [%string "split___%{group_id}%{fa_suffix}"] in
-             {seq_ids; oc= Out_channel.create file; out_file= file} )
+             {seq_ids; out_file= file} )
     in
     In_channel.read_lines file |> List.map ~f:parse_line
     |> parsed_lines_to_map ~outdir
-
-  let close_out_channels ids_and_oc =
-    Map.iter ids_and_oc ~f:(fun {oc; _} -> Out_channel.close oc)
 
   let%expect_test "read_group_info" =
     let groups = read_group_info ~file:test_group_data_file ~outdir:"." in
     groups |> [%sexp_of: group_info] |> print_s ;
     [%expect
       {|
-      ((groupA
-        ((seq_ids (seq1 seq3)) (oc <Out_channel.t>) (out_file ./split___groupA.fa)))
-       (groupB
-        ((seq_ids (seq2)) (oc <Out_channel.t>) (out_file ./split___groupB.fa)))) |}] ;
-    close_out_channels groups
+      ((groupA ((seq_ids (seq1 seq3)) (out_file ./split___groupA.fa)))
+       (groupB ((seq_ids (seq2)) (out_file ./split___groupB.fa)))) |}]
 
   (* Just go through the file twice...much simpler. *)
   let read_seq_ids_to_group_ids file =
@@ -139,32 +135,74 @@ module Seqs = struct
       ~f:(fun grouped_seqs record ->
         let open Bio_io.Fasta in
         let seq_id = Record.id record in
-        let group_id =
-          match Map.find seq_ids_to_group_ids seq_id with
-          | Some result ->
-              result
-          | None ->
-              raise_s [%message "Sequence ID has no group ID" seq_id]
-        in
-        let group_info =
-          Map.find group_info group_id
-          (* This one really should be a bug. *)
-          |> Option.value_exn ~here:[%here]
-               ~message:[%string "Group ID has no group info: %{group_id}"]
-        in
-        Map.update grouped_seqs group_id ~f:(function
-          | None ->
-              ([record], group_info)
-          | Some (records, group_info) ->
-              (record :: records, group_info) ) )
+        match Map.find seq_ids_to_group_ids seq_id with
+        | None ->
+            (* Ignore any sequence that doesn't have a group ID. But log
+               that. *)
+            prerr_endline
+              [%string "%{seq_id} has no group ID and will be ignored"] ;
+            grouped_seqs
+        | Some group_id ->
+            let group_info =
+              (* Map.find group_info group_id (* This one really should be a
+                 bug. *) |> Option.value_exn ~here:[%here] ~message: [%string
+                 "Group ID has no group info: %{group_id} (seq_id
+                 %{seq_id})"] *)
+              match Map.find group_info group_id with
+              | Some result ->
+                  result
+              | None ->
+                  print_s @@ [%sexp_of: Groups.group_info] group_info ;
+                  failwith
+                    [%string
+                      "Group ID has no group info: %{group_id} (seq_id \
+                       %{seq_id})"]
+            in
+            Map.update grouped_seqs group_id ~f:(function
+              | None ->
+                  ([record], group_info)
+              | Some (records, group_info) ->
+                  (record :: records, group_info) ) )
+
+  (* Fail unless each partition has at least one sequence. (Of course,
+     clustering a 1 seq file is probably not what you want but it should at
+     least not fail.) *)
+  let check_partitions : partitions -> unit =
+   fun partitions ->
+    if Map.is_empty partitions then
+      raise_s
+        [%message
+          "Partitions contained no data. Does the groups file match the seqs \
+           file?"] ;
+    let errors =
+      Map.fold partitions ~init:[]
+        ~f:(fun
+             ~key:group_id
+             ~data:(records, (ids_and_oc : Groups.ids_and_oc))
+             errors
+           ->
+          match records with
+          | [] ->
+              (group_id, ids_and_oc.out_file) :: errors
+          | _ :: _ ->
+              errors )
+    in
+    match errors with
+    | [] ->
+        ()
+    | errors ->
+        raise_s
+          [%message
+            "Some groups had no sequences" (errors : (string * string) list)]
 
   let write_partitions : partitions -> unit =
    fun partitions ->
     Map.iter partitions ~f:(fun (records, (ids_and_oc : Groups.ids_and_oc)) ->
-        let oc = ids_and_oc.oc in
-        let record_lines = List.map records ~f:Bio_io.Fasta.Record.to_string in
-        Out_channel.output_lines oc record_lines ;
-        Out_channel.close oc )
+        Out_channel.with_file ids_and_oc.out_file ~f:(fun oc ->
+            let record_lines =
+              List.map records ~f:Bio_io.Fasta.Record.to_string
+            in
+            Out_channel.output_lines oc record_lines ) )
 end
 
 let%expect_test _ =
@@ -181,11 +219,10 @@ let%expect_test _ =
     {|
   ((groupA
     ((((id seq3) (desc ()) (seq GGGGG)) ((id seq1) (desc ()) (seq AAAAA)))
-     ((seq_ids (seq1 seq3)) (oc <Out_channel.t>)
-      (out_file ./split___groupA.fa))))
+     ((seq_ids (seq1 seq3)) (out_file ./split___groupA.fa))))
    (groupB
     ((((id seq2) (desc ()) (seq CCCCC)))
-     ((seq_ids (seq2)) (oc <Out_channel.t>) (out_file ./split___groupB.fa))))) |}]
+     ((seq_ids (seq2)) (out_file ./split___groupB.fa))))) |}]
 
 module Mmseqs = struct
   let run ~mmseqs_exe ~seqs ~out_basename ~cov_percent ~min_seq_id ~threads =
@@ -234,6 +271,14 @@ module Mmseqs = struct
     Sh.run "cat" (glob (outdir ^ "/*.tsv")) |> Sh.stdout_to outfile |> Sh.eval
 end
 
+let assert_map_not_empty m name =
+  if Map.length m = 0 then
+    raise_s
+      [%message
+        "Expected a non-empty map. Did you try a pipe, subshell, or reading \
+         from stdin?"
+        ~map:name]
+
 let run : Opts.t -> unit =
  fun opts ->
   if not (Sys_unix.file_exists_exn opts.outdir) then
@@ -241,11 +286,14 @@ let run : Opts.t -> unit =
   let seq_ids_to_group_ids =
     Groups.read_seq_ids_to_group_ids opts.groups_file
   in
+  assert_map_not_empty seq_ids_to_group_ids "seq_ids_to_group_ids" ;
   let group_info =
     Groups.read_group_info ~file:opts.groups_file ~outdir:opts.outdir
   in
+  assert_map_not_empty group_info "group_info" ;
   let records = Seqs.read opts.seqs_file in
   let partitions = Seqs.partition ~records ~seq_ids_to_group_ids ~group_info in
+  Seqs.check_partitions partitions ;
   Seqs.write_partitions partitions ;
   Mmseqs.cluster_partitions group_info opts ;
   Mmseqs.cat_clu_tsv opts.outdir ;

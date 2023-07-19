@@ -1,7 +1,9 @@
 Seqs missing groups
 
   $ cluster_within_groups seqs.fa groups.tsv
-  cluster_within_groups: ("Sequence ID has no group ID" s1)
+  s1 has no group ID and will be ignored
+  s2 has no group ID and will be ignored
+  cluster_within_groups: "Partitions contained no data. Does the groups file match the seqs file?"
   [123]
 
 Non unique seq IDs
@@ -21,3 +23,11 @@ Too few fields
   $ cluster_within_groups seqs.fa too_few_fields.tsv
   cluster_within_groups: ("bad line in group file" (line (s1,groupA)))
   [123]
+
+Pipe/subshell redirection won't work
+
+  $ cat good_groups.tsv | cluster_within_groups seqs.fa /dev/stdin
+  cluster_within_groups: ("Expected a non-empty map. Did you try a pipe, subshell, or reading from stdin?"
+                           (map group_info))
+  [123]
+
