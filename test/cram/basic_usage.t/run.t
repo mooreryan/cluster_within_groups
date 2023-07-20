@@ -1,6 +1,6 @@
 Basic usage
 
-  $ cluster_within_groups seqs.fasta groups.tsv --threads=4 --outdir=clusters --min-seq-id=0.5 --cov=0.5 2> err
+  $ cluster_within_groups seqs.fasta groups.tsv --outdir=clusters --min-seq-id=0.5 --cov=0.5 --threads=2 2> err
   $ ../redact_log_timestamp err
   INFO [DATETIME] Getting seq IDs to group IDs
   INFO [DATETIME] Getting group info

@@ -2,9 +2,6 @@ open! Core
 
 module Sh = Shexp_process
 
-(* Make opts available to Main *)
-module Opts = Opts
-
 let%expect_test _ =
   let seq_ids_to_group_ids =
     Groups.read_seq_ids_to_group_ids Utils.test_group_data_file

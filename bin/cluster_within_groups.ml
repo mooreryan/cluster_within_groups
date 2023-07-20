@@ -67,7 +67,7 @@ module Cli = struct
     Opts.v ~groups_file ~seqs_file ~outdir ~threads ~min_seq_id ~cov_percent
       ~mmseqs_exe ~target_cluster_count
 
-  let program = Term.(const run $ opts)
+  let program = Term.(const Run.run $ opts)
 
   let cmd =
     let doc = "cluster sequences within groups" in

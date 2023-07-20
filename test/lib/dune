@@ -1,0 +1,43 @@
+(library
+ (name mmseqs_expect_test_config)
+ (modules expect_test_config)
+ (libraries core re))
+
+(library
+ (name mmseqs_targeted_clustering_test1)
+ (modules mmseqs_targeted_clustering_test1)
+ (flags
+  (:standard -open Core -open Lib -open Mmseqs_expect_test_config))
+ (libraries lib core mmseqs_expect_test_config shexp.process re)
+ (inline_tests
+  (deps test_group_data.tsv test_seqs.fasta rnr_100.fasta))
+ (preprocess
+  (pps ppx_jane))
+ (instrumentation
+  (backend bisect_ppx)))
+
+(library
+ (name mmseqs_targeted_clustering_test2)
+ (modules mmseqs_targeted_clustering_test2)
+ (flags
+  (:standard -open Core -open Lib -open Mmseqs_expect_test_config))
+ (libraries lib core mmseqs_expect_test_config shexp.process re)
+ (inline_tests
+  (deps test_group_data.tsv test_seqs.fasta rnr_100.fasta))
+ (preprocess
+  (pps ppx_jane))
+ (instrumentation
+  (backend bisect_ppx)))
+
+(library
+ (name mmseqs_targeted_clustering_test3)
+ (modules mmseqs_targeted_clustering_test3)
+ (flags
+  (:standard -open Core -open Lib -open Mmseqs_expect_test_config))
+ (libraries lib core mmseqs_expect_test_config shexp.process re)
+ (inline_tests
+  (deps test_group_data.tsv test_seqs.fasta rnr_100.fasta))
+ (preprocess
+  (pps ppx_jane))
+ (instrumentation
+  (backend bisect_ppx)))

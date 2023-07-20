@@ -12,12 +12,12 @@ Targeted clustering.
   DEBUG [DATETIME] Running targeted clustering
   DEBUG [DATETIME] Clustering seqs (clusters/split___groupA.fasta)
   DEBUG [DATETIME] Clustering at 65% identity yielded 162 seqs
-  DEBUG [DATETIME] Next clustering at 48% identity
-  DEBUG [DATETIME] Clustering at 48% identity yielded 93 seqs
-  DEBUG [DATETIME] Next clustering at 39% identity
-  DEBUG [DATETIME] Clustering at 39% identity yielded 68 seqs
-  DEBUG [DATETIME] Next clustering at 35% identity
-  DEBUG [DATETIME] Clustering at 35% identity yielded 59 seqs
+  DEBUG [DATETIME] Next clustering at 47% identity
+  DEBUG [DATETIME] Clustering at 47% identity yielded 90 seqs
+  DEBUG [DATETIME] Next clustering at 38% identity
+  DEBUG [DATETIME] Clustering at 38% identity yielded 66 seqs
+  DEBUG [DATETIME] Next clustering at 34% identity
+  DEBUG [DATETIME] Clustering at 34% identity yielded 59 seqs
   DEBUG [DATETIME] Clustering seqs (clusters/split___groupB.fasta)
   INFO [DATETIME] Group (groupB) had fewer seqs than target threshold, running fake clustering
   INFO [DATETIME] Writing cluster file
@@ -34,9 +34,9 @@ Output files
   $ ls clusters
   cluster_rep_seq.fasta
   clusters.tsv
-  split___groupA.clu_35_all_seqs.fasta
-  split___groupA.clu_35_cluster.tsv
-  split___groupA.clu_35_rep_seq.fasta
+  split___groupA.clu_34_all_seqs.fasta
+  split___groupA.clu_34_cluster.tsv
+  split___groupA.clu_34_rep_seq.fasta
   split___groupA.fasta
   split___groupB.clu_NOT_CLUSTERED_all_seqs.fasta
   split___groupB.clu_NOT_CLUSTERED_cluster.tsv
@@ -45,5 +45,5 @@ Output files
 There should only be 20 groupB because it is less than the target.
   $ grep -c '^>' clusters/*rep_seq.fasta
   clusters/cluster_rep_seq.fasta:79
-  clusters/split___groupA.clu_35_rep_seq.fasta:59
+  clusters/split___groupA.clu_34_rep_seq.fasta:59
   clusters/split___groupB.clu_NOT_CLUSTERED_rep_seq.fasta:20
