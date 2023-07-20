@@ -28,6 +28,8 @@ If you are building on your computer and sending the resulting executable to bio
 
 Run `cluster_within_groups --help` for more info.
 
+Note: there is a fun mode that attempts to get each group clustered down to a target number of sequences.
+
 ## License
 
 [![license MIT or Apache
