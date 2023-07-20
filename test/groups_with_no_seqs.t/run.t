@@ -9,6 +9,7 @@ Groups with no sequences don't generate sequence files.
   INFO [DATETIME] Checking partitions
   INFO [DATETIME] Writing partitions
   INFO [DATETIME] Clustering partitions
+  DEBUG [DATETIME] Running basic clustering
   DEBUG [DATETIME] Clustering seqs (./split___nrdA-g1.fa)
   DEBUG [DATETIME] Clustering seqs (./split___nrdA-g2.fa)
   INFO [DATETIME] Writing cluster file

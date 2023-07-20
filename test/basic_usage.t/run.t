@@ -9,6 +9,7 @@ Basic usage
   INFO [DATETIME] Checking partitions
   INFO [DATETIME] Writing partitions
   INFO [DATETIME] Clustering partitions
+  DEBUG [DATETIME] Running basic clustering
   DEBUG [DATETIME] Clustering seqs (clusters/split___nrdA.fa)
   DEBUG [DATETIME] Clustering seqs (clusters/split___polA.fa)
   DEBUG [DATETIME] Clustering seqs (clusters/split___rna_pol.fa)

@@ -56,7 +56,7 @@ let run : Opts.t -> unit =
   Logs.info (fun m -> m "Writing partitions") ;
   Seqs.write_partitions partitions ;
   Logs.info (fun m -> m "Clustering partitions") ;
-  Mmseqs.cluster_partitions partitions opts ;
+  Mmseqs.run_clustering partitions opts ;
   Logs.info (fun m -> m "Writing cluster file") ;
   Mmseqs.cat_clu_tsv opts.outdir ;
   Logs.info (fun m -> m "Writing rep seqs file") ;

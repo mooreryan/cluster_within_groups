@@ -13,7 +13,7 @@
   shexp.process
   re)
  (inline_tests
-  (deps test_group_data.tsv test_seqs.fa))
+  (deps test_group_data.tsv test_seqs.fa rnr_100.fa))
  (preprocess
   (pps ppx_jane))
  (instrumentation

@@ -38,7 +38,7 @@ module Cli = struct
     let docv = "MIN_SEQ_ID" in
     let doc =
       "List matches above this sequence identity (for clustering) (range \
-       0.0-1.0)"
+       0.0-1.0) (ignored in targeted clustering)"
     in
     Arg.(value & opt float 0.8 & info ["min-seq-id"] ~docv ~doc)
 
@@ -50,6 +50,11 @@ module Cli = struct
     in
     Arg.(value & opt float 0.8 & info ["cov"] ~docv ~doc)
 
+  let target_cluster_count =
+    let docv = "TARGET_COUNT" in
+    let doc = "Try to cluster each group down to this number of seqs" in
+    Arg.(value & opt (some int) None & info ["target-count"] ~docv ~doc)
+
   let opts =
     let+ groups_file
     and+ seqs_file
@@ -57,9 +62,10 @@ module Cli = struct
     and+ threads
     and+ min_seq_id
     and+ cov_percent
-    and+ mmseqs_exe in
+    and+ mmseqs_exe
+    and+ target_cluster_count in
     Opts.v ~groups_file ~seqs_file ~outdir ~threads ~min_seq_id ~cov_percent
-      ~mmseqs_exe
+      ~mmseqs_exe ~target_cluster_count
 
   let program = Term.(const run $ opts)
 
