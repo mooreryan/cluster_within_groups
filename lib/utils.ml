@@ -2,24 +2,24 @@ open! Core
 open Stdio
 
 let test_group_data_file = "test_group_data.tsv"
-let fa_suffix = ".fa"
-let fa_suffix_re = Re.compile @@ Re.seq [Re.str fa_suffix; Re.eos]
-let has_fa_suffix s = Re.execp fa_suffix_re s
+let fasta_suffix = ".fasta"
+let fasta_suffix_re = Re.compile @@ Re.seq [Re.str fasta_suffix; Re.eos]
+let has_fasta_suffix s = Re.execp fasta_suffix_re s
 
-let%test _ = not (has_fa_suffix "apple")
-let%test _ = not (has_fa_suffix "apple.faa")
-let%test _ = not (has_fa_suffix "apple.fa.gz")
-let%test _ = has_fa_suffix "apple.fa"
+let%test _ = not (has_fasta_suffix "apple")
+let%test _ = not (has_fasta_suffix "apple.faa")
+let%test _ = not (has_fasta_suffix "apple.fasta.gz")
+let%test _ = has_fasta_suffix "apple.fasta"
 
-let strip_fa_suffix s = Re.replace_string fa_suffix_re ~by:"" s
+let strip_fasta_suffix s = Re.replace_string fasta_suffix_re ~by:"" s
 
 let%expect_test _ =
-  [ strip_fa_suffix "apple"
-  ; strip_fa_suffix "apple.faa"
-  ; strip_fa_suffix "apple.fa.gz"
-  ; strip_fa_suffix "apple.fa" ]
+  [ strip_fasta_suffix "apple"
+  ; strip_fasta_suffix "apple.faa"
+  ; strip_fasta_suffix "apple.fasta.gz"
+  ; strip_fasta_suffix "apple.fasta" ]
   |> [%sexp_of: string list] |> print_s ;
-  [%expect {| (apple apple.faa apple.fa.gz apple) |}]
+  [%expect {| (apple apple.faa apple.fasta.gz apple) |}]
 
 (* Return list of entries in [path] as [path/entry] *)
 let ls_dir path =

@@ -33,7 +33,7 @@ let read_group_info : file:string -> outdir:string -> group_info =
       ~f:Set.add
     |> Map.mapi ~f:(fun ~key:group_id ~data:seq_ids ->
            let file =
-             outdir ^/ [%string "split___%{group_id}%{Utils.fa_suffix}"]
+             outdir ^/ [%string "split___%{group_id}%{Utils.fasta_suffix}"]
            in
            {seq_ids; out_file= file} )
   in
@@ -45,8 +45,8 @@ let%expect_test "read_group_info" =
   groups |> [%sexp_of: group_info] |> print_s ;
   [%expect
     {|
-      ((groupA ((seq_ids (seq1 seq3)) (out_file ./split___groupA.fa)))
-       (groupB ((seq_ids (seq2)) (out_file ./split___groupB.fa)))) |}]
+      ((groupA ((seq_ids (seq1 seq3)) (out_file ./split___groupA.fasta)))
+       (groupB ((seq_ids (seq2)) (out_file ./split___groupB.fasta)))) |}]
 
 (* Just go through the file twice...much simpler. *)
 let read_seq_ids_to_group_ids file =

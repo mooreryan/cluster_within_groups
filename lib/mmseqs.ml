@@ -23,7 +23,7 @@ let run ~mmseqs_exe ~seqs ~out_basename ~cov_percent ~min_seq_id ~threads =
   |> Sh.eval
 
 let run_fake_clustering
-    ~(* time mmseqs easy-cluster ../../lib/rnr_100.fa OUT_clu tmp_clu -c 1.0
+    ~(* time mmseqs easy-cluster ../../lib/rnr_100.fasta OUT_clu tmp_clu -c 1.0
         --min-seq-id 1.0 --min-aln-len 9999999 --single-step-clustering
         --kmer-per-seq 1 -s 1 --max-seqs 1 --min-ungapped-score 9999999 *)
      mmseqs_exe ~seqs ~out_basename ~threads =
@@ -62,7 +62,7 @@ let cluster_partitions : Seqs.partitions -> Opts.t -> unit =
  fun partitions opts ->
   Map.iter partitions ~f:(fun (_records, (ids_and_oc : Groups.ids_and_oc)) ->
       let seqs = ids_and_oc.out_file in
-      let out_basename = Utils.strip_fa_suffix seqs ^ ".clu" in
+      let out_basename = Utils.strip_fasta_suffix seqs ^ ".clu" in
       Logs.debug (fun m -> m "Clustering seqs (%s)" seqs) ;
       run ~mmseqs_exe:opts.mmseqs_exe ~seqs ~out_basename
         ~cov_percent:opts.cov_percent ~min_seq_id:opts.min_seq_id
@@ -75,7 +75,7 @@ let glob path =
   wordexp path |> Array.to_list
 
 let cat_rep_seqs outdir =
-  let outfile = outdir ^/ [%string "cluster_rep_seqs%{Utils.fa_suffix}"] in
+  let outfile = outdir ^/ [%string "cluster_rep_seq%{Utils.fasta_suffix}"] in
   Sh.run "cat" (glob (outdir ^ "/*rep_seq.fasta"))
   |> Sh.stdout_to outfile |> Sh.eval
 
@@ -319,7 +319,7 @@ module Size_target = struct
       Logging.set_up_logging "debug" ;
       Utils.with_temp_dir (fun outdir ->
           targeted_cluster ~target_count:50 ~tolerance:0.1 ~mmseqs_exe:"mmseqs"
-            ~seqs:"rnr_100.fa" ~cov_percent:0.8 ~threads:4 ~outdir
+            ~seqs:"rnr_100.fasta" ~cov_percent:0.8 ~threads:4 ~outdir
             ~group_id:"groupA" ;
           [%expect
             {|
@@ -338,8 +338,8 @@ module Size_target = struct
       Logging.set_up_logging "debug" ;
       Utils.with_temp_dir (fun outdir ->
           targeted_cluster ~target_count:50 ~tolerance:1e-10
-            ~mmseqs_exe:"mmseqs" ~seqs:"rnr_100.fa" ~cov_percent:0.8 ~threads:4
-            ~outdir ~group_id:"groupA" ;
+            ~mmseqs_exe:"mmseqs" ~seqs:"rnr_100.fasta" ~cov_percent:0.8
+            ~threads:4 ~outdir ~group_id:"groupA" ;
           [%expect
             {|
                   DEBUG [DATETIME] Clustering at 65% identity yielded 93 seqs
@@ -366,8 +366,8 @@ module Size_target = struct
       Logging.set_up_logging "debug" ;
       Utils.with_temp_dir (fun outdir ->
           targeted_cluster ~target_count:51 ~tolerance:1e-10
-            ~mmseqs_exe:"mmseqs" ~seqs:"rnr_100.fa" ~cov_percent:0.8 ~threads:4
-            ~outdir ~group_id:"groupA" ;
+            ~mmseqs_exe:"mmseqs" ~seqs:"rnr_100.fasta" ~cov_percent:0.8
+            ~threads:4 ~outdir ~group_id:"groupA" ;
           [%expect
             {|
             DEBUG [DATETIME] Clustering at 65% identity yielded 93 seqs

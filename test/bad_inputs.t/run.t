@@ -1,6 +1,6 @@
 Seqs missing groups
 
-  $ cluster_within_groups seqs.fa groups.tsv 2> err
+  $ cluster_within_groups seqs.fasta groups.tsv 2> err
   [123]
   $ ../redact_log_timestamp err
   INFO [DATETIME] Getting seq IDs to group IDs
@@ -14,7 +14,7 @@ Seqs missing groups
 
 Non unique seq IDs
 
-  $ cluster_within_groups seqs.fa non_unique_seqs.tsv 2> err
+  $ cluster_within_groups seqs.fasta non_unique_seqs.tsv 2> err
   [123]
   $ ../redact_log_timestamp err
   INFO [DATETIME] Getting seq IDs to group IDs
@@ -22,7 +22,7 @@ Non unique seq IDs
 
 Too many fields 
 
-  $ cluster_within_groups seqs.fa too_many_fields.tsv 2> err
+  $ cluster_within_groups seqs.fasta too_many_fields.tsv 2> err
   [123]
   $ ../redact_log_timestamp err
   INFO [DATETIME] Getting seq IDs to group IDs
@@ -30,7 +30,7 @@ Too many fields
 
 Too few fields
 
-  $ cluster_within_groups seqs.fa too_few_fields.tsv 2> err
+  $ cluster_within_groups seqs.fasta too_few_fields.tsv 2> err
   [123]
   $ ../redact_log_timestamp err
   INFO [DATETIME] Getting seq IDs to group IDs
@@ -38,7 +38,7 @@ Too few fields
 
 Pipe/subshell redirection won't work
 
-  $ cat good_groups.tsv | cluster_within_groups seqs.fa /dev/stdin 2> err
+  $ cat good_groups.tsv | cluster_within_groups seqs.fasta /dev/stdin 2> err
   [123]
   $ ../redact_log_timestamp err
   INFO [DATETIME] Getting seq IDs to group IDs

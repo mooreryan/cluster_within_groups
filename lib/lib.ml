@@ -12,17 +12,17 @@ let%expect_test _ =
   let group_info =
     Groups.read_group_info ~file:Utils.test_group_data_file ~outdir:"."
   in
-  let records = Seqs.read "test_seqs.fa" in
+  let records = Seqs.read "test_seqs.fasta" in
   let partitions = Seqs.partition ~records ~seq_ids_to_group_ids ~group_info in
   partitions |> [%sexp_of: Seqs.partitions] |> Stdio.print_s ;
   [%expect
     {|
   ((groupA
     ((((id seq3) (desc ()) (seq GGGGG)) ((id seq1) (desc ()) (seq AAAAA)))
-     ((seq_ids (seq1 seq3)) (out_file ./split___groupA.fa))))
+     ((seq_ids (seq1 seq3)) (out_file ./split___groupA.fasta))))
    (groupB
     ((((id seq2) (desc ()) (seq CCCCC)))
-     ((seq_ids (seq2)) (out_file ./split___groupB.fa))))) |}]
+     ((seq_ids (seq2)) (out_file ./split___groupB.fasta))))) |}]
 
 let assert_map_not_empty m name =
   if Map.length m = 0 then
