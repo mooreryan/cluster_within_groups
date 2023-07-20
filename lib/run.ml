@@ -29,11 +29,15 @@ let assert_map_not_empty m name =
          from stdin?"
         ~map:name]
 
+let set_up_outdir outdir =
+  if Sys_unix.file_exists_exn outdir then
+    raise_s [%message "outdir already exists" ~outdir]
+  else Core_unix.mkdir_p outdir
+
 let run : Opts.t -> unit =
  fun opts ->
   Logging.set_up_logging "debug" ;
-  if not (Sys_unix.file_exists_exn opts.outdir) then
-    Core_unix.mkdir_p opts.outdir ;
+  set_up_outdir opts.outdir ;
   Logs.info (fun m -> m "Getting seq IDs to group IDs") ;
   let seq_ids_to_group_ids =
     Groups.read_seq_ids_to_group_ids opts.groups_file

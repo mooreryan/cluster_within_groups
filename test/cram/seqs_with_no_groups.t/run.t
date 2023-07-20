@@ -11,8 +11,8 @@ Seqs in fasta file with no group are ignored.
   INFO [DATETIME] Writing partitions
   INFO [DATETIME] Clustering partitions
   DEBUG [DATETIME] Running basic clustering
-  DEBUG [DATETIME] Clustering seqs (./split___nrdA-g1.fasta)
-  DEBUG [DATETIME] Clustering seqs (./split___nrdA-g2.fasta)
+  DEBUG [DATETIME] Clustering seqs (clusters/split___nrdA-g1.fasta)
+  DEBUG [DATETIME] Clustering seqs (clusters/split___nrdA-g2.fasta)
   INFO [DATETIME] Writing cluster file
   INFO [DATETIME] Writing rep seqs file
   INFO [DATETIME] Done!

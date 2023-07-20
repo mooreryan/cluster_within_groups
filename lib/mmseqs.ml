@@ -76,12 +76,13 @@ let glob path =
 
 let cat_rep_seqs outdir =
   let outfile = outdir ^/ [%string "cluster_rep_seq%{Utils.fasta_suffix}"] in
-  Sh.run "cat" (glob (outdir ^ "/*rep_seq.fasta"))
+  Sh.run "cat" (glob (outdir ^ "/split___*rep_seq.fasta"))
   |> Sh.stdout_to outfile |> Sh.eval
 
 let cat_clu_tsv outdir =
   let outfile = outdir ^/ [%string "clusters.tsv"] in
-  Sh.run "cat" (glob (outdir ^ "/*.tsv")) |> Sh.stdout_to outfile |> Sh.eval
+  Sh.run "cat" (glob (outdir ^ "/split___*.tsv"))
+  |> Sh.stdout_to outfile |> Sh.eval
 
 (* Dealing with "size-targeted" clustering. I.e., user want's a given target
    size for all clusters, so any sequence file with greater than that many

@@ -1,5 +1,6 @@
 Seqs missing groups
 
+  $ if [ -d clusters ]; then rm -r clusters; fi
   $ cluster_within_groups seqs.fasta groups.tsv --threads=2 2> err
   [123]
   $ ../redact_log_timestamp err
@@ -14,6 +15,7 @@ Seqs missing groups
 
 Non unique seq IDs
 
+  $ if [ -d clusters ]; then rm -r clusters; fi
   $ cluster_within_groups seqs.fasta non_unique_seqs.tsv --threads=2 2> err
   [123]
   $ ../redact_log_timestamp err
@@ -22,6 +24,7 @@ Non unique seq IDs
 
 Too many fields 
 
+  $ if [ -d clusters ]; then rm -r clusters; fi
   $ cluster_within_groups seqs.fasta too_many_fields.tsv --threads=2 2> err
   [123]
   $ ../redact_log_timestamp err
@@ -30,6 +33,7 @@ Too many fields
 
 Too few fields
 
+  $ if [ -d clusters ]; then rm -r clusters; fi
   $ cluster_within_groups seqs.fasta too_few_fields.tsv --threads=2 2> err
   [123]
   $ ../redact_log_timestamp err
@@ -38,6 +42,7 @@ Too few fields
 
 Pipe/subshell redirection won't work
 
+  $ if [ -d clusters ]; then rm -r clusters; fi
   $ cat good_groups.tsv | cluster_within_groups seqs.fasta /dev/stdin --threads=2 2> err
   [123]
   $ ../redact_log_timestamp err
@@ -46,3 +51,10 @@ Pipe/subshell redirection won't work
   cluster_within_groups: ("Expected a non-empty map. Did you try a pipe, subshell, or reading from stdin?"
                            (map group_info))
 
+Directory already exists
+
+  $ mkdir -p already_there
+  $ cluster_within_groups good_seqs.fasta good_groups.tsv --outdir=already_there --threads=2 2> err
+  [123]
+  $ ../redact_log_timestamp err
+  cluster_within_groups: ("outdir already exists" (outdir already_there))

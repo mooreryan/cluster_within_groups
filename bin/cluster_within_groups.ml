@@ -22,7 +22,7 @@ module Cli = struct
   let outdir =
     let docv = "OUTDIR" in
     let doc = "Out directory" in
-    Arg.(value & opt string "." & info ["outdir"] ~docv ~doc)
+    Arg.(value & opt string "clusters" & info ["outdir"] ~docv ~doc)
 
   let mmseqs_exe =
     let docv = "MMSEQS_EXE" in

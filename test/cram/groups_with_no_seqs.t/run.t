@@ -10,17 +10,19 @@ Groups with no sequences don't generate sequence files.
   INFO [DATETIME] Writing partitions
   INFO [DATETIME] Clustering partitions
   DEBUG [DATETIME] Running basic clustering
-  DEBUG [DATETIME] Clustering seqs (./split___nrdA-g1.fasta)
-  DEBUG [DATETIME] Clustering seqs (./split___nrdA-g2.fasta)
+  DEBUG [DATETIME] Clustering seqs (clusters/split___nrdA-g1.fasta)
+  DEBUG [DATETIME] Clustering seqs (clusters/split___nrdA-g2.fasta)
   INFO [DATETIME] Writing cluster file
   INFO [DATETIME] Writing rep seqs file
   INFO [DATETIME] Done!
   $ ls
-  cluster_rep_seq.fasta
-  clusters.tsv
+  clusters
   err
   groups.tsv
   seqs.fasta
+  $ ls clusters
+  cluster_rep_seq.fasta
+  clusters.tsv
   split___nrdA-g1.clu_all_seqs.fasta
   split___nrdA-g1.clu_cluster.tsv
   split___nrdA-g1.clu_rep_seq.fasta
